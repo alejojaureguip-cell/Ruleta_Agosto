@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incentivo Ejecutivos - Canal Directo Venta Nueva MX</title>
+
+<!-- ========================================== -->
+<!-- SECCIÓN DE ESTILOS (CSS)                   -->
+<!-- Aquí definimos el diseño, colores y formas -->
+<!-- ========================================== -->
+<style>
+  /* Reset básico para márgenes y paddings */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  /* Estilos del cuerpo de la página: fuente, colores base y el fondo de la bandera de Colombia */
+  body { 
+  font-family: 'Segoe UI', Arial, sans-serif; 
+
+  background: linear-gradient(
+    135deg,
+    #1E2761,
+    #4B6CB7
+  );
+
+  background-attachment: fixed;
+  color: #20242E; 
+  min-height: 100vh; 
+  padding: 24px; 
+}
+  
+  /* Títulos y subtítulos principales */
+  h1 { color: #fff; text-align: center; font-size: 26px; margin-bottom: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+  .sub { color: #CADCFC; text-align: center; font-size: 14px; margin-bottom: 24px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+  
+  /* Contenedor principal que agrupa las dos columnas (Ruleta y Paneles) */
+  .wrap { max-width: 1100px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  
+  /* Tarjetas blancas donde va el contenido */
+  .card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+  
+  /* Columna A: Lado izquierdo (controles de configuración y el dibujo de la ruleta) */
+  .colA { flex: 1; min-width: 340px; display: flex; flex-direction: column; align-items: center; }
+  /* Columna B: Lado derecho (estado, premio, botones y registro) */
+  .colB { flex: 1.15; min-width: 360px; display: flex; flex-direction: column; gap: 14px; }
+  
+  /* El triángulo indicador (flecha naranja) que señala el premio en la parte superior de la ruleta */
+  .pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 22px solid #D85A30; margin-bottom: -6px; position: relative; z-index: 2; }
+  
+  /* Estilo del gráfico SVG de la ruleta. Incluye la transición (animación) de giro */
+  svg.wheel { width: 100%; max-width: 340px; transition: transform 4.4s cubic-bezier(0.12, 0.6, 0.08, 1); }
+  
+  /* Estilos generales para los botones */
+  button { font-family: inherit; font-size: 14.5px; padding: 9px 16px; border-radius: 8px; border: 1.5px solid #1E2761; background: #fff; color: #1E2761; cursor: pointer; font-weight: 600; }
+  button:hover { background: #EEF2FB; }
+  button.primary { background: #1E2761; color: #fff; } /* Botón principal oscuro */
+  button.primary:hover { background: #2A3578; }
+  button.mini { font-size: 12px; padding: 4px 10px; }
+  button.rojo { border-color: #C0392B; color: #C0392B; } /* Botón de eliminar (rojo) */
+  button.rojo:hover { background: #FDECEA; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; } /* Estado deshabilitado al girar */
+  
+  /* Campos de texto y listas desplegables (selects) */
+  input[type=text], select { font-family: inherit; font-size: 15px; padding: 9px 12px; border-radius: 8px; border: 1.5px solid #C8CBD6; width: 100%; background: #fff; }
+  
+  /* Etiquetas descriptivas de campos (textos pequeños en gris) */
+  .label { font-size: 12px; color: #7A7E8C; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
+  .premioTitulo{
+  color:#0B9D43;
+  font-weight:900;
+}
+
+  /* Textos de premios y estados */
+  .estado { font-size: 15.5px; line-height: 1.45; }
+  .premio{
+  font-size:30px;
+  font-weight:900;
+  color:#00963F;
+  animation: premioPop .45s ease;
+}
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  
+  /* Textos informativos de nota al pie */
+  .nota { font-size: 12px; color: #7A7E8C; margin-top: 8px; line-height: 1.4; }
+  
+  /* Estilos para la tabla del historial */
+  table { width: 100%; font-size: 12.5px; border-collapse: collapse; }
+  th, td { text-align: left; padding: 6px 6px; border-bottom: 1px solid #EDEEF3; vertical-align: middle; }
+  th { color: #7A7E8C; font-weight: 600; font-size: 11.5px; }
+  
+  /* Clase auxiliar para ocultar elementos fácilmente */
+  .hide { display: none !important; }
+  
+  /* Etiquetas (badges) de colores para la tabla de historial */
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+@keyframes premioPop{
+
+0%{
+transform:scale(.5);
+opacity:0;
+}
+
+60%{
+transform:scale(1.12);
+}
+
+100%{
+transform:scale(1);
+opacity:1;
+}
+
+}
+</style>
+</head>
+<body>
+
+<!-- ========================================== -->
+<!-- SECCIÓN HTML (ESTRUCTURA Y COMPONENTES)    -->
+<!-- ========================================== -->
+<h1>Incentivo Ejecutivos - Canal Directo Venta Nueva MX</h1>
+<p class="sub">Campaña Agosto 2026 · Vigencia del 01 al 31 de agosto · Los registros se guardan en este navegador</p>
+
+<div class="wrap">
+  <!-- COLUMNA IZQUIERDA: Configuración y Gráfico de Ruleta -->
+  <div class="colA card">
+    <div style="width:100%;margin-bottom:14px;">
+      <div class="row">
+        <!-- Selector principal del nivel del ejecutivo -->
+<div style="flex:1;">
+  <div class="label">Semana</div>
+  <select id="semana">
+    <option value="1">Semana 1 (01 - 09 Ago)</option>
+    <option value="2">Semana 2 (10 - 16 Ago)</option>
+    <option value="3">Semana 3 (17 - 23 Ago)</option>
+    <option value="4">Semana 4 (24 - 31 Ago)</option>
+  </select>
+</div>
+
+<div style="flex:1;">
+  <div class="label">M de Antigüedad</div>
+  <select id="segmento">
+<option value="M1">M1</option>
+<option value="M2">M2</option>
+<option value="M3">M3</option>
+<option value="M4">M4</option>
+<option value="M5">M5</option>
+<option value="M6">M6</option>
+<option value="M7">M7</option>
+<option value="M8">M8</option>
+<option value="M9">M9</option>
+<option value="M10">M10</option>
+<option value="M11">M11</option>
+<option value="M12">M12</option>
+<option value="M13">M13</option>
+<option value="M14">M14</option>
+<option value="M15">M15</option>
+<option value="M16">M16</option>
+<option value="M17">M17</option>
+<option value="M18">M18</option>
+<option value="M>18">>M18</option>
+  </select>
+</div>
+
+<div style="flex:1;">
+  <div class="label">Tipo de Ruleta</div>
+  <select id="tipoMeta">
+    <option value="basica">🎯 Básica</option>
+    <option value="vip">⭐ VIP</option>
+  </select>
+</div>
+
+</div> <!-- cierra row -->
+</div> <!-- cierra bloque de configuración -->
+
+    <!-- Elementos visuales de la ruleta -->
+    <div class="label" style="align-self:flex-start;" id="wheelTitle">Ruleta de premios</div>
+    <div class="pointer"></div>
+    
+    <!-- Contenedor SVG. Aquí dibujaremos los gajos de la ruleta con Javascript -->
+    <svg class="wheel" id="wheel" viewBox="-165 -165 330 330">
+      <g id="segs"></g> <!-- Grupo donde se inyectan los paths (gajos) -->
+      <!-- Centro de la ruleta (buje o hub) -->
+      <g id="hubGroup">
+    <circle id="hub" cx="0" cy="0" r="36" fill="#fff" stroke="#1E2761" stroke-width="3"/>
+    <text id="hubT1" x="0" y="5"
+          text-anchor="middle"
+          dominant-baseline="middle"
+          font-size="12"
+          font-weight="700"
+          fill="#1E2761">FE</text>
+
+    <text id="hubT2"
+          x="0"
+          y="18"
+          text-anchor="middle"
+          font-size="10"
+          fill="#7A7E8C"></text>
+</g>
+    
+    <!-- Controles para realizar el giro -->
+    <div style="margin-top:16px;width:100%;">
+      <div class="label">Ejecutivo que gira</div>
+      <div class="row">
+        <input type="text" id="nombre" placeholder="Nombre del ejecutivo" style="flex:1;">
+        <button class="primary" id="spinBtn" style="flex:0 0 auto;">Girar ruleta</button>
+      </div>
+      <div class="nota" id="avisoNombre"></div>
+    </div>
+  </div>
+
+  <!-- COLUMNA DERECHA: Estado, Premio y Registro -->
+  <div class="colB">
+    <!-- Tarjeta de Estado del Giro Actual -->
+    <div class="card">
+      <div class="label">Resultado del giro</div>
+      <div class="estado" id="estadoTxt"></div>
+      
+      <div id="premioBox" class="hide" style="margin-top:12px;">
+        <div class="label premioTitulo" id="premioLabel">Premio obtenido</div>
+        <div class="premio" id="premioVal">$0</div>
+      </div>
+      
+      
+      <!-- Botón para limpiar e iniciar con otro asesor -->
+      <div class="row hide" id="accionesReset" style="margin-top:14px;">
+        <button id="resetBtn" style="flex:1;">Siguiente asesor</button>
+      </div>
+    </div>
+
+    <!-- Tarjeta dinámica de la mecánica seleccionada -->
+<div class="card">
+  <div class="label">Mecánica de esta semana</div>
+
+  <div id="mecanicaInfo" class="estado">
+    Selecciona nivel, semana y tipo de ruleta para ver la meta y los premios.
+  </div>
+
+  <div class="nota">
+    Cada ejecutivo obtiene un único premio por semana.
+    Cada semana se evalúa de forma independiente.
+  </div>
+</div>
+
+    <!-- Tarjeta del Historial y Exportación de Datos -->
+    <div class="card">
+      <div class="row" style="align-items:center;justify-content:space-between;">
+        <div class="label" style="margin:0;">Registro del incentivo</div>
+        <button id="csvBtn" class="mini">Descargar CSV</button>
+      </div>
+      <input type="text" id="buscar" placeholder="Buscar ejecutivo..." style="margin-top:10px;font-size:13px;padding:7px 10px;">
+      <div style="overflow-x:auto;">
+      <table style="margin-top:10px;">
+        <thead>
+  <tr>
+    <th>Ejecutivo</th>
+    <th>Antiguedad</th>
+    <th>Semana</th>
+    <th>Ruleta</th>
+    <th>Meta</th>
+    <th>Premio</th>
+    <th></th>
+  </tr>
+</thead>
+        <tbody id="histBody"></tbody> <!-- Filas del historial inyectadas con JS -->
+      </table>
+      </div>
+      <div class="nota">Cada registro corresponde al resultado obtenido por el ejecutivo en la semana seleccionada.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- SECCIÓN JAVASCRIPT (LÓGICA E INTERACTIVIDAD)-->
+<!-- ========================================== -->
+<script>
+// 1. DICCIONARIOS Y CONFIGURACIONES
+// RULETAS: Define cada tipo de ruleta (colores, borde, textos y los 6 premios que contiene)
+const RULETAS_AGOSTO = {
+  ruleta1: {
+    titulo: "Ruleta 1",
+    hub: "R1",
+    borde: "#1E2761",
+    casillas: [
+  { t: "$30.000", v: 30000, c:"#5DCAA5", tx:"#04342C" },
+  { t: "$50.000", v: 50000, c:"#AFA9EC", tx:"#26215C" },
+  { t: "$60.000", v: 60000, c:"#F5C26B", tx:"#5A4208" },
+  { t: "$30.000", v: 30000, c:"#5DCAA5", tx:"#04342C" },
+  { t: "$50.000", v: 50000, c:"#AFA9EC", tx:"#26215C" },
+  { t: "$60.000", v: 60000, c:"#F5C26B", tx:"#5A4208" }
+]
+  },
+
+  ruleta1vip: {
+    titulo: "Ruleta 1 VIP",
+    hub: "VIP1",
+    borde: "#7A5C0B",
+    casillas: [
+  { t: "$50.000", v:50000, c:"#F5E3AE", tx:"#6B500A" },
+  { t: "$70.000", v:70000, c:"#E9C860", tx:"#5A4208" },
+  { t: "$80.000", v:80000, c:"#D4A017", tx:"#FFFFFF" },
+  { t: "$50.000", v:50000, c:"#F5E3AE", tx:"#6B500A" },
+  { t: "$70.000", v:70000, c:"#E9C860", tx:"#5A4208" },
+  { t: "$80.000", v:80000, c:"#D4A017", tx:"#FFFFFF" }
+]
+  },
+
+ruleta2: {
+  titulo: "Ruleta 2",
+  hub: "R2",
+  borde: "#1E2761",
+  casillas: [
+  { t:"$80.000", v:80000, c:"#5DCAA5", tx:"#04342C" },
+  { t:"$100.000", v:100000, c:"#AFA9EC", tx:"#26215C" },
+  { t:"$110.000", v:110000, c:"#F5C26B", tx:"#5A4208" },
+  { t:"$80.000", v:80000, c:"#5DCAA5", tx:"#04342C" },
+  { t:"$100.000", v:100000, c:"#AFA9EC", tx:"#26215C" },
+  { t:"$110.000", v:110000, c:"#F5C26B", tx:"#5A4208" }
+]
+},
+
+ruleta2vip: {
+  titulo: "Ruleta 2 VIP",
+  hub: "VIP2",
+  borde: "#7A5C0B",
+  casillas: [
+  { t:"$110.000", v:110000, c:"#F5E3AE", tx:"#6B500A" },
+  { t:"$120.000", v:120000, c:"#E9C860", tx:"#5A4208" },
+  { t:"$130.000", v:130000, c:"#D4A017", tx:"#FFFFFF" },
+  { t:"$110.000", v:110000, c:"#F5E3AE", tx:"#6B500A" },
+  { t:"$120.000", v:120000, c:"#E9C860", tx:"#5A4208" },
+  { t:"$130.000", v:130000, c:"#D4A017", tx:"#FFFFFF" }
+]
+}
+};
+
+// Metas semanales del Incentivo Agosto 2026 por M de Antigüedad
+const METAS = {};
+
+const gruposMeta = {
+  m1_m4: {
+    basica: {
+      1: 2,
+      2: 2,
+      3: 2,
+      4: 3
+    },
+    vip: {
+      1: 3,
+      2: 3,
+      3: 3,
+      4: 4
+    }
+  },
+
+  m5_m9: {
+    basica: {
+      1: 3,
+      2: 3,
+      3: 3,
+      4: 4
+    },
+    vip: {
+      1: 4,
+      2: 4,
+      3: 4,
+      4: 5
+    }
+  },
+
+  m10_m18: {
+    basica: {
+      1: 4,
+      2: 4,
+      3: 4,
+      4: 5
+    },
+    vip: {
+      1: 5,
+      2: 5,
+      3: 5,
+      4: 6
+    }
+  }
+};
+
+// Asigna las metas a cada M individual
+["M1","M2","M3","M4"].forEach(m => {
+  METAS[m] = gruposMeta.m1_m4;
+});
+
+["M5","M6","M7","M8","M9"].forEach(m => {
+  METAS[m] = gruposMeta.m5_m9;
+});
+
+["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].forEach(m => {
+  METAS[m] = gruposMeta.m10_m18;
+});
+
+
+// 2. SISTEMA DE ALMACENAMIENTO LOCAL (LocalStorage)
+const KEY = "ruleta_agosto_2026_mx"; // Clave donde se guarda en el navegador
+let registros = [];
+// Al arrancar, intentamos cargar los datos guardados antes
+try { registros = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { registros = []; }
+// Función que sobrescribe el LocalStorage con el array actualizado de registros
+function guardar() { try { localStorage.setItem(KEY, JSON.stringify(registros)); } catch (e) {} }
+
+// 3. FUNCIONES DE APOYO / UTILIDADES MATEMÁTICAS Y DE FORMATO
+const R = 155, NS = "http://www.w3.org/2000/svg";
+const segs = document.getElementById("segs");
+let actual = "ruleta1";
+
+// Da formato de moneda colombiana (ej. 50000 -> $50.000)
+const fmt = v => "$" + v.toLocaleString("es-CO");
+// Añade la palabra "FE" o "Nube" a un número (maneja plurales)
+function fe(n) {
+  const u = cfgActual.unidad || "FE";
+  return n + " " + u + (n === 1 ? "" : "s");
+}
+// Convierte un ángulo y radio polar a coordenadas [x, y] para dibujar en SVG
+function polar(a, r) { const rad = (a - 90) * Math.PI / 180; return [r * Math.cos(rad), r * Math.sin(rad)]; }
+
+// 4. FUNCIONES DE INTERFAZ Y DIBUJO
+// Dibuja los gajos (casillas) de la ruleta mediante paths SVG y coloca el texto rotado
+function pintar(clave) {
+  actual = clave;
+  const rul = RULETAS_AGOSTO[clave];
+  segs.innerHTML = ""; // Limpiamos ruleta anterior
+  const cs = rul.casillas, n = cs.length, ang = 360 / n;
+  
+  // Por cada premio en el array, dibuja su porción de la circunferencia
+  cs.forEach((cas, i) => {
+    const a0 = i * ang, a1 = (i + 1) * ang;
+    const [x0, y0] = polar(a0, R), [x1, y1] = polar(a1, R);
+    const p = document.createElementNS(NS, "path");
+    // Código de path en SVG (arco)
+    p.setAttribute("d", "M0 0 L" + x0.toFixed(1) + " " + y0.toFixed(1) + " A" + R + " " + R + " 0 0 1 " + x1.toFixed(1) + " " + y1.toFixed(1) + " Z");
+    p.setAttribute("fill", cas.c); p.setAttribute("stroke", "#fff"); p.setAttribute("stroke-width", "2.5");
+    segs.appendChild(p);
+    
+    // Calcula la posición para el texto del premio (en medio del gajo)
+    const mid = a0 + ang / 2, [tx, ty] = polar(mid, R * 0.62);
+    const t = document.createElementNS(NS, "text");
+    t.setAttribute("x", tx.toFixed(1)); t.setAttribute("y", ty.toFixed(1));
+    t.setAttribute("text-anchor", "middle");
+    t.setAttribute("transform", "rotate(" + mid + " " + tx.toFixed(1) + " " + ty.toFixed(1) + ")");
+    t.setAttribute("fill", cas.tx); t.setAttribute("font-size", cas.t.length > 12 ? "9.5" : "12.5"); t.setAttribute("font-weight", "700");
+    t.textContent = cas.t;
+    segs.appendChild(t);
+  });
+  // Ajusta colores y textos del centro del buje
+  document.getElementById("hub").setAttribute("stroke", rul.borde);
+  document.getElementById("hubT1").textContent = rul.hub;
+  document.getElementById("hubT2").textContent = "";
+  document.getElementById("wheelTitle").textContent = rul.titulo;
+}
+
+
+// Retorna la clave (ej. "b17", "e8") que conecta los Selects del HTML con el objeto CONFIG
+function claveActual() {
+  return {
+    nivel: document.getElementById("segmento").value,
+    semana: document.getElementById("semana").value,
+    tipoMeta: document.getElementById("tipoMeta").value
+  };
+}
+
+function refrescarConfig() {
+  const seleccion = claveActual();
+
+  const nombreNivel = seleccion.nivel;
+
+  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Básica";
+  const meta = METAS?.[seleccion.nivel]?.[seleccion.tipoMeta]?.[seleccion.semana] ?? "—";
+  const mecanicaInfo = document.getElementById("mecanicaInfo");
+
+if (mecanicaInfo) {
+  const nombreRuleta =
+  ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].includes(seleccion.nivel)
+      ? (seleccion.tipoMeta === "vip" ? "Ruleta VIP 2" : "Ruleta 2")
+      : (seleccion.tipoMeta === "vip" ? "Ruleta VIP 1" : "Ruleta 1");
+
+  const rulKey =
+  ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].includes(seleccion.nivel)
+      ? (seleccion.tipoMeta === "vip" ? "ruleta2vip" : "ruleta2")
+      : (seleccion.tipoMeta === "vip" ? "ruleta1vip" : "ruleta1");
+
+  const premios = [...new Set(
+  RULETAS_AGOSTO[rulKey].casillas
+    .filter(c => c.v > 0)
+    .map(c => c.t)
+)].join(" · ");
+
+  mecanicaInfo.innerHTML =
+  "📌 M de Antigüedad: <strong>" + seleccion.nivel + "</strong>" +
+  "<br>" +
+  "📅 Semana " + seleccion.semana +
+  "<br><br>" +
+  "🎯 Meta mínima: <strong>" + meta + " ventas</strong><br>" +
+  "🎡 " + nombreRuleta + "<br>" +
+  "💰 Premios: " + premios +
+  "<br><br>" +
+  "<div style='background:linear-gradient(90deg,#16A34A,#22C55E);color:white;padding:14px;border-radius:12px;text-align:center;font-size:18px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.25);letter-spacing:.5px;'>🏆 ¡AQUÍ SIEMPRE GANAS! 🏆</div>";
+}
+
+document.getElementById("estadoTxt").textContent =
+  seleccion.nivel +
+  " · Semana " +
+  seleccion.semana +
+  " · " +
+  tipoTexto +
+  " · Meta mínima: " +
+  meta +
+  " ventas. Ingresa el nombre del ejecutivo para girar.";
+
+  let ruletaSeleccionada = "";
+
+if (
+  ["M1","M2","M3","M4","M5","M6","M7","M8","M9"]
+  .includes(seleccion.nivel)
+) {
+  ruletaSeleccionada = seleccion.tipoMeta === "vip" ? "ruleta1vip" : "ruleta1";
+} else {
+  ruletaSeleccionada = seleccion.tipoMeta === "vip" ? "ruleta2vip" : "ruleta2";
+}
+
+pintar(ruletaSeleccionada);
+}
+
+function cambioSeleccion() {
+  refrescarConfig();
+
+  // Vuelve a comprobar si el ejecutivo ya giró con la nueva selección
+  nombre.dispatchEvent(new Event("input"));
+}
+
+document.getElementById("segmento").addEventListener("change", cambioSeleccion);
+document.getElementById("semana").addEventListener("change", cambioSeleccion);
+document.getElementById("tipoMeta").addEventListener("change", cambioSeleccion);
+
+// 5. LÓGICA DE GIRO Y ESTADOS GLOBALES
+const wheel = document.getElementById("wheel"), btn = document.getElementById("spinBtn");
+const estadoTxt = document.getElementById("estadoTxt"), premioBox = document.getElementById("premioBox"), premioVal = document.getElementById("premioVal"), premioLabel = document.getElementById("premioLabel");
+const accionesReset = document.getElementById("accionesReset");
+const nombre = document.getElementById("nombre"), histBody = document.getElementById("histBody"), avisoNombre = document.getElementById("avisoNombre");
+let rot = 0, girando = false, regActivo = null;
+
+// Lógica principal de rotación de la ruleta mediante una transición CSS y cálculo de ángulos
+function girar(cb) {
+  girando = true;
+  bloquear(true); // Deshabilita inputs durante el giro
+  const rul = RULETAS_AGOSTO[actual];
+const cs = rul.casillas, n = cs.length, ang = 360 / n;
+  const idx = Math.floor(Math.random() * n); // Escoge un premio al azar matemáticamente
+  
+  // Calcula cuánto girar: Da 5 vueltas completas (360*5) y aterriza justo en el centro del gajo ganador
+  const target = 360 * 5 + (360 - (idx * ang + ang / 2));
+  rot += target - (rot % 360); // Acumula rotaciones para que la ruleta no se devuelva al girar varias veces
+  wheel.style.transform = "rotate(" + rot + "deg)"; // Aplica rotación CSS
+  estadoTxt.textContent = "Girando...";
+  
+  // Espera 4.5s a que termine la animación antes de devolver el premio
+  setTimeout(() => { girando = false; cb(cs[idx]); }, 4500);
+}
+
+// Bloquea selectores e input de nombre
+function bloquear(b) {
+  document.getElementById("segmento").disabled = b;
+  document.getElementById("semana").disabled = b;
+  document.getElementById("tipoMeta").disabled = b;
+  nombre.disabled = b;
+}
+
+// Busca un asesor en el historial para prevenir duplicados o advertir su estado
+function buscarRegistro(nom) {
+  const semanaActual = document.getElementById("semana").value;
+
+  return registros.find(r =>
+    r.asesor.toLowerCase() === nom.toLowerCase() &&
+    String(r.semana) === String(semanaActual)
+  );
+}
+
+// Revisa en tiempo real si el ejecutivo ya tiene un registro
+nombre.addEventListener("input", () => {
+  const nom = nombre.value.trim();
+  const r = buscarRegistro(nom);
+
+  if (!nom) {
+    avisoNombre.textContent = "";
+    return;
+  }
+
+  if (r) {
+    avisoNombre.textContent =
+      "Este ejecutivo ya tiene un giro registrado: " +
+      r.nivel +
+      " · Semana " +
+      r.semana +
+      " · Ruleta " +
+      r.tipo +
+      " · Premio " +
+      (r.valorPremio > 0 ? fmt(r.valorPremio) : r.premio) +
+      ". Bórralo del registro si necesitas repetir el giro.";
+  } else {
+    avisoNombre.textContent = "";
+  }
+});
+
+// Listener: Botón "Girar ruleta"
+btn.addEventListener("click", () => {
+  if (girando || regActivo) return;
+  const nom = nombre.value.trim();
+  if (!nom) {
+  estadoTxt.textContent = "Escribe primero el nombre del ejecutivo.";
+  return;
+}
+
+if (buscarRegistro(nom)) {
+  estadoTxt.textContent = "Este ejecutivo ya tiene un giro registrado en la semana seleccionada.";
+  return;
+}
+  
+  // Dispara el giro. Al terminar (callback `cas`), guarda el estado temporal
+girar(cas => {
+    console.log("CASILLA GANADORA:", cas);
+
+  const seleccion = claveActual();
+  const meta = METAS[seleccion.nivel][seleccion.tipoMeta][seleccion.semana];
+
+  const nombreNivel = seleccion.nivel;
+
+  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Básica";
+
+  regActivo = {
+    id: Date.now(),
+    asesor: nom,
+    nivel: nombreNivel,
+    semana: seleccion.semana,
+    tipo: tipoTexto,
+    meta: meta,
+    premio: cas.t,
+    valorPremio: cas.v,
+    estado: "cerrado"
+  };
+
+  registros.push(regActivo);
+guardar();
+render();
+
+  premioVal.textContent = cas.v > 0 ? fmt(cas.v) : cas.t;
+  premioLabel.textContent = "Premio obtenido";
+  premioBox.classList.remove("hide");
+  accionesReset.classList.remove("hide");
+
+  estadoTxt.textContent =
+    nom +
+    " · " +
+    nombreNivel +
+    " · Semana " +
+    seleccion.semana +
+    " · " +
+    tipoTexto +
+    " · Premio: " +
+    cas.t;
+
+  btn.disabled = false;
+bloquear(false);
+regActivo = null;
+});
+});
+
+
+
+
+
+// Botón "Siguiente asesor": Reinicia todo el panel para el próximo
+document.getElementById("resetBtn").addEventListener("click", () => {
+  regActivo = null;
+  nombre.value = "";
+  avisoNombre.textContent = "";
+  premioBox.classList.add("hide");
+  accionesReset.classList.add("hide");
+  btn.disabled = false;
+  bloquear(false);
+  refrescarConfig();
+});
+
+
+// Borra un registro completo del historial por si hubo un error o se necesita repetir el giro
+function borrar(id) {
+  const r = registros.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm("¿Borrar el registro de " + r.asesor + "? Podrá volver a girar desde cero.")) return;
+  registros = registros.filter(x => x.id !== id);
+  guardar(); render();
+}
+
+// 7. TABLA DE HISTORIAL Y EXPORTACIÓN
+// Limpia la tabla y la vuelve a dibujar inyectando HTML por cada registro existente
+function render() {
+  const filtro = (document.getElementById("buscar").value || "").toLowerCase();
+
+  histBody.innerHTML = "";
+
+  // Muestra primero los registros más recientes
+  registros.slice().reverse().forEach(r => {
+
+    // Filtro por nombre del ejecutivo
+    if (filtro && !r.asesor.toLowerCase().includes(filtro)) return;
+
+    const tr = document.createElement("tr");
+
+    // Botón para borrar un registro si hubo algún error
+    const acciones =
+      "<button class='mini rojo' onclick='borrar(" +
+      r.id +
+      ")'>Borrar</button>";
+
+    // Construye las columnas del historial
+    tr.innerHTML =
+      "<td>" + r.asesor + "</td>" +
+      "<td>" + r.nivel + "</td>" +
+      "<td>Semana " + r.semana + "</td>" +
+      "<td>" + r.tipo + "</td>" +
+      "<td>" + r.meta + " ventas</td>" +
+      "<td><strong>" + (r.valorPremio > 0 ? fmt(r.valorPremio) : r.premio) + "</strong></td>" +
+      "<td style='white-space:nowrap;'>" + acciones + "</td>";
+
+    histBody.appendChild(tr);
+  });
+}
+
+// Expone las funciones globales que el HTML inyectado necesita accionar vía 'onclick'
+window.borrar = borrar;
+// Listener para filtrar la tabla en tiempo real al escribir en el buscador
+document.getElementById("buscar").addEventListener("input", render);
+
+// Genera un archivo CSV parseando el array 'registros' y forzando su descarga al usuario
+// Descarga el registro del incentivo en formato CSV
+document.getElementById("csvBtn").addEventListener("click", () => {
+
+  let csv = "Ejecutivo;Antigüedad;Semana;Ruleta;Meta;Premio\n";
+
+  registros.forEach(r => {
+
+    const premioFinal =
+      r.valorPremio > 0
+        ? fmt(r.valorPremio)
+        : r.premio;
+
+    csv += [
+      r.asesor,
+      r.nivel,
+      "Semana " + r.semana,
+      r.tipo,
+      r.meta + " ventas",
+      premioFinal
+    ].join(";") + "\n";
+  });
+
+  const blob = new Blob(
+    ["\uFEFF" + csv],
+    { type: "text/csv;charset=utf-8;" }
+  );
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "Registro_Incentivo_Agosto_2026_MX.csv";
+  a.click();
+
+  URL.revokeObjectURL(a.href);
+});
+
+// Inicialización de la app (carga selectores iniciales y pinta tabla local)
+refrescarConfig();
+render();
+</script>
+</body>
+</html>
