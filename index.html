@@ -165,8 +165,8 @@ opacity:1;
 <div style="flex:1;">
   <div class="label">Tipo de Ruleta</div>
   <select id="tipoMeta">
-    <option value="meta">🎯 Meta</option>
-    <option value="vip">⭐ VIP</option>
+    <option value="meta">🎯 Ruleta Meta</option>
+    <option value="vip">⭐ Ruleta VIP</option>
   </select>
 </div>
 
@@ -490,7 +490,7 @@ function refrescarConfig() {
 
   const nombreNivel = seleccion.nivel;
 
-  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Meta";
+  const tipoTexto = seleccion.tipoMeta === "vip" ? "Ruleta VIP" : "Ruleta Meta";
   const meta = METAS?.[seleccion.nivel]?.[seleccion.tipoMeta]?.[seleccion.semana] ?? "—";
   const mecanicaInfo = document.getElementById("mecanicaInfo");
 
