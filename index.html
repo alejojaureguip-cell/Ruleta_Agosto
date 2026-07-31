@@ -165,7 +165,7 @@ opacity:1;
 <div style="flex:1;">
   <div class="label">Tipo de Ruleta</div>
   <select id="tipoMeta">
-    <option value="basica">🎯 Básica</option>
+    <option value="meta">🎯 Meta</option>
     <option value="vip">⭐ VIP</option>
   </select>
 </div>
@@ -278,7 +278,7 @@ opacity:1;
 // RULETAS: Define cada tipo de ruleta (colores, borde, textos y los 6 premios que contiene)
 const RULETAS_AGOSTO = {
   ruleta1: {
-    titulo: "Ruleta 1",
+    titulo: "Ruleta Meta",
     hub: "R1",
     borde: "#1E2761",
     casillas: [
@@ -338,8 +338,8 @@ ruleta2vip: {
 const METAS = {};
 
 const gruposMeta = {
-  m1_m4: {
-    basica: {
+  m1_m2: {
+    meta: {
       1: 2,
       2: 2,
       3: 2,
@@ -353,8 +353,8 @@ const gruposMeta = {
     }
   },
 
-  m5_m9: {
-    basica: {
+  m3_m9: {
+    meta: {
       1: 3,
       2: 3,
       3: 3,
@@ -368,8 +368,8 @@ const gruposMeta = {
     }
   },
 
-  m10_m18: {
-    basica: {
+  m10_m14: {
+    meta: {
       1: 4,
       2: 4,
       3: 4,
@@ -381,20 +381,39 @@ const gruposMeta = {
       3: 5,
       4: 6
     }
+  },
+
+  m15_m18: {
+    meta: {
+      1: 5,
+      2: 5,
+      3: 5,
+      4: 6
+    },
+    vip: {
+      1: 6,
+      2: 6,
+      3: 6,
+      4: 7
+    }
   }
 };
 
 // Asigna las metas a cada M individual
-["M1","M2","M3","M4"].forEach(m => {
-  METAS[m] = gruposMeta.m1_m4;
+["M1","M2"].forEach(m => {
+  METAS[m] = gruposMeta.m1_m2;
 });
 
-["M5","M6","M7","M8","M9"].forEach(m => {
-  METAS[m] = gruposMeta.m5_m9;
+["M3","M4","M5","M6","M7","M8","M9"].forEach(m => {
+  METAS[m] = gruposMeta.m3_m9;
 });
 
-["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].forEach(m => {
-  METAS[m] = gruposMeta.m10_m18;
+["M10","M11","M12","M13","M14"].forEach(m => {
+  METAS[m] = gruposMeta.m10_m14;
+});
+
+["M15","M16","M17","M18","M>18"].forEach(m => {
+  METAS[m] = gruposMeta.m15_m18;
 });
 
 
@@ -471,7 +490,7 @@ function refrescarConfig() {
 
   const nombreNivel = seleccion.nivel;
 
-  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Básica";
+  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Meta";
   const meta = METAS?.[seleccion.nivel]?.[seleccion.tipoMeta]?.[seleccion.semana] ?? "—";
   const mecanicaInfo = document.getElementById("mecanicaInfo");
 
@@ -479,7 +498,7 @@ if (mecanicaInfo) {
   const nombreRuleta =
   ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].includes(seleccion.nivel)
       ? (seleccion.tipoMeta === "vip" ? "Ruleta VIP 2" : "Ruleta 2")
-      : (seleccion.tipoMeta === "vip" ? "Ruleta VIP 1" : "Ruleta 1");
+      : (seleccion.tipoMeta === "vip" ? "Ruleta VIP 1" : "Ruleta Meta");
 
   const rulKey =
   ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].includes(seleccion.nivel)
@@ -631,7 +650,7 @@ girar(cas => {
 
   const nombreNivel = seleccion.nivel;
 
-  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Básica";
+  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Meta";
 
   regActivo = {
     id: Date.now(),
