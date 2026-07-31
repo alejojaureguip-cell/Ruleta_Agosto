@@ -48,7 +48,7 @@
   .pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 22px solid #D85A30; margin-bottom: -6px; position: relative; z-index: 2; }
   
   /* Estilo del gráfico SVG de la ruleta. Incluye la transición (animación) de giro */
-  svg.wheel { width: 100%; max-width: 340px; transition: transform 4.4s cubic-bezier(0.12, 0.6, 0.08, 1); }
+  svg.wheel { width: 100%; max-width: 340px; transition: transform 10s cubic-bezier(0.05, 0.75, 0.10, 1);}
   
   /* Estilos generales para los botones */
   button { font-family: inherit; font-size: 14.5px; padding: 9px 16px; border-radius: 8px; border: 1.5px solid #1E2761; background: #fff; color: #1E2761; cursor: pointer; font-weight: 600; }
@@ -124,6 +124,14 @@ opacity:1;
 <div class="wrap">
   <!-- COLUMNA IZQUIERDA: Configuración y Gráfico de Ruleta -->
   <div class="colA card">
+    <!-- Selector del tipo de participante -->
+<div style="width:100%;margin-bottom:14px;">
+  <div class="label">Tipo de participante</div>
+  <select id="tipoParticipante">
+    <option value="asesor">Ejecutivos</option>
+    <option value="gerente">Gerentes Comerciales</option>
+  </select>
+</div>
     <div style="width:100%;margin-bottom:14px;">
       <div class="row">
         <!-- Selector principal del nivel del ejecutivo -->
@@ -137,7 +145,7 @@ opacity:1;
   </select>
 </div>
 
-<div style="flex:1;">
+<div id="segmentoBox" style="flex:1;">
   <div class="label">M de Antigüedad</div>
   <select id="segmento">
 <option value="M1">M1</option>
@@ -159,6 +167,18 @@ opacity:1;
 <option value="M17">M17</option>
 <option value="M18">M18</option>
 <option value="M>18">>M18</option>
+  </select>
+</div>
+
+<!-- Selector de gerente -->
+<div id="gerenteBox" style="flex:1; display:none;">
+  <div class="label">Gerente</div>
+  <select id="gerente">
+    <option value="grace">Equipo Mexico Grace</option>
+    <option value="jhonathan">Equipo Mexico Jhonathan</option>
+    <option value="julio">Equipo Mexico Julio</option>
+    <option value="katerine">Equipo Mexico Katerine</option>
+    <option value="viviana">Equipo Mexico Viviana</option>
   </select>
 </div>
 
@@ -200,13 +220,18 @@ opacity:1;
     
     <!-- Controles para realizar el giro -->
     <div style="margin-top:16px;width:100%;">
-      <div class="label">Ejecutivo que gira</div>
-      <div class="row">
-        <input type="text" id="nombre" placeholder="Nombre del ejecutivo" style="flex:1;">
-        <button class="primary" id="spinBtn" style="flex:0 0 auto;">Girar ruleta</button>
-      </div>
-      <div class="nota" id="avisoNombre"></div>
-    </div>
+
+  <div id="nombreBox">
+    <div class="label">Ejecutivo que gira</div>
+    <input type="text" id="nombre" placeholder="Nombre del ejecutivo" style="width:100%;">
+    <div class="nota" id="avisoNombre"></div>
+  </div>
+
+  <div style="margin-top:10px;">
+    <button class="primary" id="spinBtn" style="width:100%;">Girar ruleta</button>
+  </div>
+
+</div>
   </div>
 
   <!-- COLUMNA DERECHA: Estado, Premio y Registro -->
@@ -224,7 +249,7 @@ opacity:1;
       
       <!-- Botón para limpiar e iniciar con otro asesor -->
       <div class="row hide" id="accionesReset" style="margin-top:14px;">
-        <button id="resetBtn" style="flex:1;">Siguiente asesor</button>
+        <button id="resetBtn" style="flex:1;">Siguiente</button>
       </div>
     </div>
 
@@ -248,12 +273,12 @@ opacity:1;
         <div class="label" style="margin:0;">Registro del incentivo</div>
         <button id="csvBtn" class="mini">Descargar CSV</button>
       </div>
-      <input type="text" id="buscar" placeholder="Buscar ejecutivo..." style="margin-top:10px;font-size:13px;padding:7px 10px;">
+      <input type="text" id="buscar" placeholder="Buscar participante..." style="margin-top:10px;font-size:13px;padding:7px 10px;">
       <div style="overflow-x:auto;">
       <table style="margin-top:10px;">
         <thead>
   <tr>
-    <th>Ejecutivo</th>
+    <th>Panticipante</th>
     <th>Antiguedad</th>
     <th>Semana</th>
     <th>Ruleta</th>
@@ -278,8 +303,8 @@ opacity:1;
 // RULETAS: Define cada tipo de ruleta (colores, borde, textos y los 6 premios que contiene)
 const RULETAS_AGOSTO = {
   ruleta1: {
-    titulo: "Ruleta Meta",
-    hub: "R1",
+    titulo: "Ruleta Meta 1",
+    hub: "META1",
     borde: "#1E2761",
     casillas: [
   { t: "$30.000", v: 30000, c:"#5DCAA5", tx:"#04342C" },
@@ -306,8 +331,8 @@ const RULETAS_AGOSTO = {
   },
 
 ruleta2: {
-  titulo: "Ruleta 2",
-  hub: "R2",
+  titulo: "Ruleta Meta 2",
+  hub: "META2",
   borde: "#1E2761",
   casillas: [
   { t:"$80.000", v:80000, c:"#5DCAA5", tx:"#04342C" },
@@ -331,7 +356,38 @@ ruleta2vip: {
   { t:"$120.000", v:120000, c:"#E9C860", tx:"#5A4208" },
   { t:"$130.000", v:130000, c:"#D4A017", tx:"#FFFFFF" }
 ]
+},
+
+// RULETA META PARA GERENTES
+ruletaGerente: {
+  titulo: "Ruleta Meta",
+  hub: "META",
+  borde: "#1E2761",
+  casillas: [
+    { t:"$150.000", v:150000, c:"#5DCAA5", tx:"#04342C" },
+    { t:"$250.000", v:250000, c:"#AFA9EC", tx:"#26215C" },
+    { t:"$300.000", v:300000, c:"#F5C26B", tx:"#5A4208" },
+    { t:"$150.000", v:150000, c:"#5DCAA5", tx:"#04342C" },
+    { t:"$250.000", v:250000, c:"#AFA9EC", tx:"#26215C" },
+    { t:"$300.000", v:300000, c:"#F5C26B", tx:"#5A4208" }
+  ]
+},
+
+// RULETA VIP PARA GERENTES
+ruletaGerenteVip: {
+  titulo: "Ruleta VIP",
+  hub: "VIP",
+  borde: "#7A5C0B",
+  casillas: [
+    { t:"$250.000", v:250000, c:"#F5E3AE", tx:"#6B500A" },
+    { t:"$300.000", v:300000, c:"#E9C860", tx:"#5A4208" },
+    { t:"$400.000", v:400000, c:"#D4A017", tx:"#FFFFFF" },
+    { t:"$250.000", v:250000, c:"#F5E3AE", tx:"#6B500A" },
+    { t:"$300.000", v:300000, c:"#E9C860", tx:"#5A4208" },
+    { t:"$400.000", v:400000, c:"#D4A017", tx:"#FFFFFF" }
+  ]
 }
+
 };
 
 // Metas semanales del Incentivo Agosto 2026 por M de Antigüedad
@@ -416,6 +472,34 @@ const gruposMeta = {
   METAS[m] = gruposMeta.m15_m18;
 });
 
+// Metas semanales para gerentes
+const METAS_GERENTES = {
+  grace: {
+    meta: { 1: 40, 2: 40, 3: 40, 4: 50 },
+    vip:  { 1: 43, 2: 43, 3: 43, 4: 46 }
+  },
+
+  jhonathan: {
+    meta: { 1: 47, 2: 47, 3: 47, 4: 57 },
+    vip:  { 1: 50, 2: 50, 3: 50, 4: 53 }
+  },
+
+  julio: {
+    meta: { 1: 41, 2: 41, 3: 41, 4: 51 },
+    vip:  { 1: 44, 2: 44, 3: 44, 4: 47 }
+  },
+
+  katerine: {
+    meta: { 1: 45, 2: 45, 3: 45, 4: 55 },
+    vip:  { 1: 48, 2: 48, 3: 48, 4: 51 }
+  },
+
+  viviana: {
+    meta: { 1: 45, 2: 45, 3: 45, 4: 55 },
+    vip:  { 1: 48, 2: 48, 3: 48, 4: 51 }
+  }
+};
+
 
 // 2. SISTEMA DE ALMACENAMIENTO LOCAL (LocalStorage)
 const KEY = "ruleta_agosto_2026_mx"; // Clave donde se guarda en el navegador
@@ -479,7 +563,9 @@ function pintar(clave) {
 // Retorna la clave (ej. "b17", "e8") que conecta los Selects del HTML con el objeto CONFIG
 function claveActual() {
   return {
+    participante: document.getElementById("tipoParticipante").value,
     nivel: document.getElementById("segmento").value,
+    gerente: document.getElementById("gerente").value,
     semana: document.getElementById("semana").value,
     tipoMeta: document.getElementById("tipoMeta").value
   };
@@ -488,22 +574,56 @@ function claveActual() {
 function refrescarConfig() {
   const seleccion = claveActual();
 
+  const nombresSemana = {
+  "1": "Semana 1 (01 - 09 Ago)",
+  "2": "Semana 2 (10 - 16 Ago)",
+  "3": "Semana 3 (17 - 23 Ago)",
+  "4": "Semana 4 (24 - 31 Ago)"
+};
+
+const semanaCompleta = nombresSemana[seleccion.semana];
+
   const nombreNivel = seleccion.nivel;
 
   const tipoTexto = seleccion.tipoMeta === "vip" ? "Ruleta VIP" : "Ruleta Meta";
-  const meta = METAS?.[seleccion.nivel]?.[seleccion.tipoMeta]?.[seleccion.semana] ?? "—";
+  const meta =
+  seleccion.participante === "gerente"
+    ? (METAS_GERENTES?.[seleccion.gerente]?.[seleccion.tipoMeta]?.[seleccion.semana] ?? "—")
+    : (METAS?.[seleccion.nivel]?.[seleccion.tipoMeta]?.[seleccion.semana] ?? "—");
   const mecanicaInfo = document.getElementById("mecanicaInfo");
 
 if (mecanicaInfo) {
-  const nombreRuleta =
-  ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].includes(seleccion.nivel)
+  let nombreRuleta = "";
+let rulKey = "";
+
+if (seleccion.participante === "gerente") {
+
+  nombreRuleta =
+    seleccion.tipoMeta === "vip"
+      ? "Ruleta VIP"
+      : "Ruleta Meta";
+
+  rulKey =
+    seleccion.tipoMeta === "vip"
+      ? "ruletaGerenteVip"
+      : "ruletaGerente";
+
+} else {
+
+  const esRuleta2 =
+    ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"]
+    .includes(seleccion.nivel);
+
+  nombreRuleta =
+    esRuleta2
       ? (seleccion.tipoMeta === "vip" ? "Ruleta VIP 2" : "Ruleta 2")
       : (seleccion.tipoMeta === "vip" ? "Ruleta VIP 1" : "Ruleta Meta");
 
-  const rulKey =
-  ["M10","M11","M12","M13","M14","M15","M16","M17","M18","M>18"].includes(seleccion.nivel)
+  rulKey =
+    esRuleta2
       ? (seleccion.tipoMeta === "vip" ? "ruleta2vip" : "ruleta2")
       : (seleccion.tipoMeta === "vip" ? "ruleta1vip" : "ruleta1");
+}
 
   const premios = [...new Set(
   RULETAS_AGOSTO[rulKey].casillas
@@ -511,10 +631,17 @@ if (mecanicaInfo) {
     .map(c => c.t)
 )].join(" · ");
 
-  mecanicaInfo.innerHTML =
-  "📌 M de Antigüedad: <strong>" + seleccion.nivel + "</strong>" +
+  const detalleParticipante =
+  seleccion.participante === "gerente"
+    ? "👑 Equipo: <strong>" +
+      document.getElementById("gerente").options[document.getElementById("gerente").selectedIndex].text +
+      "</strong>"
+    : "📌 M de Antigüedad: <strong>" + seleccion.nivel + "</strong>";
+
+mecanicaInfo.innerHTML =
+  detalleParticipante +
   "<br>" +
-  "📅 Semana " + seleccion.semana +
+  "📅 " + semanaCompleta +
   "<br><br>" +
   "🎯 Meta mínima: <strong>" + meta + " ventas</strong><br>" +
   "🎡 " + nombreRuleta + "<br>" +
@@ -523,25 +650,51 @@ if (mecanicaInfo) {
   "<div style='background:linear-gradient(90deg,#16A34A,#22C55E);color:white;padding:14px;border-radius:12px;text-align:center;font-size:18px;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.25);letter-spacing:.5px;'>🏆 ¡AQUÍ SIEMPRE GANAS! 🏆</div>";
 }
 
+const nombreParticipante =
+  seleccion.participante === "gerente"
+    ? document.getElementById("gerente").options[document.getElementById("gerente").selectedIndex].text
+    : seleccion.nivel;
+
 document.getElementById("estadoTxt").textContent =
-  seleccion.nivel +
+  nombreParticipante +
   " · Semana " +
   seleccion.semana +
   " · " +
   tipoTexto +
   " · Meta mínima: " +
   meta +
-  " ventas. Ingresa el nombre del ejecutivo para girar.";
+  " ventas. " +
+(seleccion.participante === "gerente"
+  ? "Presiona Girar ruleta para participar."
+  : "Ingresa el nombre del ejecutivo para girar.");
 
   let ruletaSeleccionada = "";
 
-if (
-  ["M1","M2","M3","M4","M5","M6","M7","M8","M9"]
-  .includes(seleccion.nivel)
-) {
-  ruletaSeleccionada = seleccion.tipoMeta === "vip" ? "ruleta1vip" : "ruleta1";
+if (seleccion.participante === "gerente") {
+
+  // Ruletas exclusivas para gerentes
+  ruletaSeleccionada =
+    seleccion.tipoMeta === "vip"
+      ? "ruletaGerenteVip"
+      : "ruletaGerente";
+
 } else {
-  ruletaSeleccionada = seleccion.tipoMeta === "vip" ? "ruleta2vip" : "ruleta2";
+
+  // Ruletas de asesores
+  if (
+    ["M1","M2","M3","M4","M5","M6","M7","M8","M9"]
+    .includes(seleccion.nivel)
+  ) {
+    ruletaSeleccionada =
+      seleccion.tipoMeta === "vip"
+        ? "ruleta1vip"
+        : "ruleta1";
+  } else {
+    ruletaSeleccionada =
+      seleccion.tipoMeta === "vip"
+        ? "ruleta2vip"
+        : "ruleta2";
+  }
 }
 
 pintar(ruletaSeleccionada);
@@ -557,6 +710,26 @@ function cambioSeleccion() {
 document.getElementById("segmento").addEventListener("change", cambioSeleccion);
 document.getElementById("semana").addEventListener("change", cambioSeleccion);
 document.getElementById("tipoMeta").addEventListener("change", cambioSeleccion);
+document.getElementById("gerente").addEventListener("change", cambioSeleccion);
+document.getElementById("tipoParticipante").addEventListener("change", function() {
+  const tipo = this.value;
+
+  const segmentoBox = document.getElementById("segmentoBox");
+  const gerenteBox = document.getElementById("gerenteBox");
+  const nombreBox = document.getElementById("nombreBox");
+
+  if (tipo === "gerente") {
+    segmentoBox.style.display = "none";
+    gerenteBox.style.display = "block";
+    nombreBox.style.display = "none";
+  } else {
+    segmentoBox.style.display = "block";
+    gerenteBox.style.display = "none";
+    nombreBox.style.display = "block";
+  }
+
+  refrescarConfig();
+});
 
 // 5. LÓGICA DE GIRO Y ESTADOS GLOBALES
 const wheel = document.getElementById("wheel"), btn = document.getElementById("spinBtn");
@@ -574,13 +747,13 @@ const cs = rul.casillas, n = cs.length, ang = 360 / n;
   const idx = Math.floor(Math.random() * n); // Escoge un premio al azar matemáticamente
   
   // Calcula cuánto girar: Da 5 vueltas completas (360*5) y aterriza justo en el centro del gajo ganador
-  const target = 360 * 5 + (360 - (idx * ang + ang / 2));
+  const target = 360 * 10 + (360 - (idx * ang + ang / 2));
   rot += target - (rot % 360); // Acumula rotaciones para que la ruleta no se devuelva al girar varias veces
   wheel.style.transform = "rotate(" + rot + "deg)"; // Aplica rotación CSS
   estadoTxt.textContent = "Girando...";
   
   // Espera 4.5s a que termine la animación antes de devolver el premio
-  setTimeout(() => { girando = false; cb(cs[idx]); }, 4500);
+  setTimeout(() => { girando = false; cb(cs[idx]); }, 10100);
 }
 
 // Bloquea selectores e input de nombre
@@ -630,8 +803,16 @@ nombre.addEventListener("input", () => {
 // Listener: Botón "Girar ruleta"
 btn.addEventListener("click", () => {
   if (girando || regActivo) return;
-  const nom = nombre.value.trim();
-  if (!nom) {
+  const seleccionInicial = claveActual();
+const esGerenteInicial = seleccionInicial.participante === "gerente";
+
+const nom = esGerenteInicial
+  ? document.getElementById("gerente").options[
+      document.getElementById("gerente").selectedIndex
+    ].text
+  : nombre.value.trim();
+
+if (!esGerenteInicial && !nom) {
   estadoTxt.textContent = "Escribe primero el nombre del ejecutivo.";
   return;
 }
@@ -646,16 +827,25 @@ girar(cas => {
     console.log("CASILLA GANADORA:", cas);
 
   const seleccion = claveActual();
-  const meta = METAS[seleccion.nivel][seleccion.tipoMeta][seleccion.semana];
 
-  const nombreNivel = seleccion.nivel;
+const esGerente = seleccion.participante === "gerente";
 
-  const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Meta";
+const nombreEquipo = esGerente
+  ? document.getElementById("gerente").options[
+      document.getElementById("gerente").selectedIndex
+    ].text
+  : "";
+
+const meta = esGerente
+  ? METAS_GERENTES[seleccion.gerente][seleccion.tipoMeta][seleccion.semana]
+  : METAS[seleccion.nivel][seleccion.tipoMeta][seleccion.semana];
+
+const tipoTexto = seleccion.tipoMeta === "vip" ? "VIP" : "Meta";
 
   regActivo = {
     id: Date.now(),
-    asesor: nom,
-    nivel: nombreNivel,
+    asesor: esGerente ? nombreEquipo : nom,
+nivel: esGerente ? "" : seleccion.nivel,
     semana: seleccion.semana,
     tipo: tipoTexto,
     meta: meta,
@@ -674,15 +864,14 @@ render();
   accionesReset.classList.remove("hide");
 
   estadoTxt.textContent =
-    nom +
-    " · " +
-    nombreNivel +
-    " · Semana " +
-    seleccion.semana +
-    " · " +
-    tipoTexto +
-    " · Premio: " +
-    cas.t;
+  (esGerente ? nombreEquipo : nom) +
+  (esGerente ? "" : " · " + seleccion.nivel) +
+  " · Semana " +
+  seleccion.semana +
+  " · " +
+  tipoTexto +
+  " · Premio: " +
+  cas.t;
 
   btn.disabled = false;
 bloquear(false);
@@ -703,7 +892,17 @@ document.getElementById("resetBtn").addEventListener("click", () => {
   accionesReset.classList.add("hide");
   btn.disabled = false;
   bloquear(false);
-  refrescarConfig();
+
+  wheel.style.transition = "none";
+rot = 0;
+wheel.style.transform = "rotate(0deg)";
+
+refrescarConfig();
+
+// Espera un instante antes de devolver la animación de giro
+setTimeout(() => {
+  wheel.style.transition = "";
+}, 100);
 });
 
 
@@ -760,7 +959,7 @@ document.getElementById("buscar").addEventListener("input", render);
 // Descarga el registro del incentivo en formato CSV
 document.getElementById("csvBtn").addEventListener("click", () => {
 
-  let csv = "Ejecutivo;Antigüedad;Semana;Ruleta;Meta;Premio\n";
+  let csv = "Participante;Antigüedad;Semana;Ruleta;Meta;Premio\n";
 
   registros.forEach(r => {
 
